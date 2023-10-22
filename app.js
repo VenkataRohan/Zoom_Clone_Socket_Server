@@ -12,6 +12,9 @@ const io = new Server(server,{
     }});
     const roomUserCounts = {};
 
+app.get("/",(req,res)=>{
+  res.send({"daSD":"ASDASD"})
+})
 
 io.on('connection', (socket) => {
   console.log('A user connected');
@@ -57,7 +60,7 @@ io.on('connection', (socket) => {
   //   console.log('A user disconnected');
   // });
 });
-
-server.listen(8000, () => {
-  console.log('Server listening on http://localhost:8000');
+const port=process.env.PORT||8000
+server.listen(port, () => {
+  console.log('Server listening on '+ port);
 });
