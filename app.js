@@ -2,6 +2,7 @@ const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
  
+const soc_perr=new Map();
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server,{
@@ -10,15 +11,16 @@ const io = new Server(server,{
       methods: ["GET", "POST"]
     }});
     const roomUserCounts = {};
+
+
 io.on('connection', (socket) => {
   console.log('A user connected');
-  socket.on('tst', (res)=>{
-        console.log(res);
-  })
+  console.log(socket.id);  
 
   //
   socket.on('join-room', (roomId, userId) => {
     console.log(userId);
+    soc_perr.set(socket.id,userId)
     socket.join("1")
     // Increment the user count for the room
     // if (!roomUserCounts["1"]) {
@@ -27,18 +29,33 @@ io.on('connection', (socket) => {
     //     roomUserCounts["1"]++;
     //   }
    socket.to("1").emit('user-connected', userId)
+   
+    socket.on("recieveMsg",(val,soc_id)=>{
+        console.log(val);
+        console.log(soc_id);
+        socket.to("1").emit("newMsg",val,soc_id)
+    })
+
+    socket.on("video_toggle",(usrid,soc_id,isvidoplaying)=>{
+      console.log(usrid);
+      console.log(soc_id);
+      socket.to("1").emit("server_video_toggle",usrid,soc_id,isvidoplaying)
+  })
 
       console.log(roomUserCounts["1"]);
     socket.on('disconnect', () => {
-      socket.to("1").emit('user-disconnected', userId)
+     console.log(soc_perr);
+      socket.to("1").emit('user-disconnected', socket.id,soc_perr.get(socket.id))
+      console.log('A user disconnected');
+      soc_perr.delete(socket.id)
     })
   })
   //
  
 
-  socket.on('disconnect', () => {
-    console.log('A user disconnected');
-  });
+  // socket.on('disconnect', () => {
+  //   console.log('A user disconnected');
+  // });
 });
 
 server.listen(8000, () => {
