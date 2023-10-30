@@ -39,11 +39,23 @@ io.on('connection', (socket) => {
         socket.to("1").emit("newMsg",val,soc_id)
     })
 
-    socket.on("video_toggle",(usrid,soc_id,isvidoplaying)=>{
+    socket.on("track_toggle",(usrid,soc_id,isvidoplaying,trackType)=>{
       console.log(usrid);
       console.log(soc_id);
-      socket.to("1").emit("server_video_toggle",usrid,soc_id,isvidoplaying)
+      socket.to("1").emit("server_track_toggle",usrid,soc_id,isvidoplaying,trackType)
   })
+  socket.on("screenshare",(userid)=>{
+    console.log("screenshareasdas");
+    console.log(userid);
+     io.to("1").emit("server_screenshare",userid)
+    // socket.to("1").emit('user-connected', userid)
+})
+socket.on("stop_screenshare",()=>{
+  console.log("stop_screenshare");
+
+   io.to("1").emit("server_stop_screenshare")
+  // socket.to("1").emit('user-connected', userid)
+})
 
       console.log(roomUserCounts["1"]);
     socket.on('disconnect', () => {
